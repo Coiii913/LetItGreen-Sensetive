@@ -1,37 +1,40 @@
 <!--
-Version change: none → 1.0.0
-List of modified principles: All principles added (Sustainable Focus, User-Centric Design, Test-First Development, API-First Design, Performance Optimization)
-Added sections: Technology Stack, Development Workflow
+Version change: 1.0.0 → 1.0.1
+List of modified principles: Sustainable Focus → Sustainability-first Marketplace; User-Centric Design → Mobile-first Accessible Experience; Test-First Development → Verified Integration & Stability; API-First Design → Service Contract & Resilience; Performance Optimization → Responsible AI Augmentation
+Added sections: Responsible AI Augmentation, explicit service resilience and local persistence
 Removed sections: none
-Templates requiring updates: ✅ updated /Users/coiii913/Desktop/newgreen/.specify/templates/tasks-template.md (made tests mandatory)
+Templates requiring updates: ✅ updated /Users/coiii913/Desktop/newgreen/.specify/templates/tasks-template.md (tests mandatory)
 Follow-up TODOs: none
 -->
 # Green Market Constitution
 
 ## Core Principles
 
-### Sustainable Focus
-All features must promote sustainability and eco-friendly practices. This ensures the platform aligns with its core mission of supporting second-hand marketplaces and reducing environmental impact.
+### Documentation Language
+All project documentation (.md files like spec.md, plan.md, tasks.md) must be written in **Chinese (中文)** for team accessibility. Code files (.js, .jsx, .css) and code comments remain in **English**.
 
-### User-Centric Design
-UI components must be intuitive, accessible, and mobile-first responsive. This prioritizes user experience and ensures broad accessibility for the marketplace users.
+### Sustainability-first Marketplace
+Every feature must advance reuse, reduce waste, and make carbon savings visible. Product design and data modeling must prioritize second-hand value, local reuse, and environmental impact over novelty.
 
-### Test-First Development
-Tests must be written before implementation; Maintain high test coverage above 80%. This ensures code reliability and prevents regressions in the platform.
+### Mobile-first Accessible Experience
+UI must render as a compact mobile marketplace, remain navigable on small screens, and use accessible semantic controls, alt text, and clear tap targets. All new pages and components must keep content legible, interactive, and responsive.
 
-### API-First Design
-Design RESTful APIs before UI implementation; Ensure clear contracts between frontend and backend. This enables scalable and maintainable architecture.
+### Service Contract & Resilience
+Frontend and backend must communicate through explicit API contracts; endpoints should be stable, validated, and fall back gracefully when AI or network services fail. Data flows must be predictable and recoverable, with client state synced from API responses and persisted locally when appropriate.
 
-### Performance Optimization
-Optimize for fast loading times; Implement lazy loading and code splitting. This ensures good user experience even on slower connections.
+### Responsible AI Augmentation
+AI is an assistive layer, not a requirement for core functionality. AI-powered search, description enhancement, and vision analysis must degrade cleanly to deterministic fallback logic and preserve user trust by avoiding opaque behavior.
+
+### Verified Integration & Stability
+Testing is mandatory for core app flows, including item listing, search, favorites/cart state, routing, and API contracts. Changes must be validated by both automated tests and code review before release.
 
 ## Technology Stack
-Frontend: React with Vite, Leaflet for maps; Backend: Node.js with Express; Deployment: Vercel for frontend, server hosting TBD.
+React + Vite + React Router compose the UI. Leaflet powers map-based discovery. Axios handles browser API requests. Server-side logic runs on Node.js + Express, with in-memory item data, OpenAI/Deepseek AI endpoints, Tesseract OCR, Sharp image heuristics, and OpenStreetMap geocoding fallback. LocalStorage persists favorites and cart state.
 
 ## Development Workflow
-Use Git for version control with feature branches; Code reviews required for all PRs; Automated testing in CI/CD pipeline.
+Use Git feature branches and PR-based review. Keep component logic separated from state/context and API integration. Document feature user stories, API contracts, and acceptance criteria in specs. Ensure templates and PR descriptions reference this constitution.
 
 ## Governance
-Constitution supersedes all other practices; Amendments require team documentation and approval; Compliance must be verified in code reviews.
+This constitution is the project source of truth. All architectural decisions, templates, and implementation plans must align with it. Amendments require team review, documentation of the change, and a patch version update. PR reviewers must verify compliance with core principles and test coverage.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-11 | **Last Amended**: 2026-05-11
+**Version**: 1.0.1 | **Ratified**: 2026-05-11 | **Last Amended**: 2026-05-11
