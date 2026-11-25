@@ -88,6 +88,9 @@ function BottomNav() {
       <button className="bottom-nav-btn" onClick={() => navigate("/favorites")}>
         <img src="/fav-icon.png" alt="Favorites" className="bottom-nav-icon-img" />
       </button>
+      <button className="bottom-nav-btn" onClick={() => navigate("/cart")}> 
+        <span className="bottom-nav-icon-text" aria-hidden="true">🛒</span>
+      </button>
     </nav>
   );
 }

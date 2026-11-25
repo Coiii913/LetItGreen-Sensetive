@@ -53,7 +53,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const openai = new OpenAI({
-  apiKey: process.env.DEESEEK_API_KEY || "sk-008ec806b7ed408db3fe0f704bb3be24",
+  apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com",
 });
 
@@ -121,7 +121,15 @@ items = items.map((it) => ({ ...it, co2Saved: computeCo2SavedForItem(it) }));
 
 // API: list items
 app.get("/api/items", (req, res) => {
-  res.json(items);
+  try {
+    if (!Array.isArray(items)) {
+      return res.json([]);
+    }
+    res.json(items);
+  } catch (err) {
+    console.error("Failed to list items:", err);
+    res.status(500).json({ error: "Failed to list items" });
+  }
 });
 
 // API: get single item

@@ -2,11 +2,13 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../state/AppContext.jsx";
 import { distanceKm } from "../utils/geoUtils.js";
+import { calculateCarbonSaved, detectCategory } from "../utils/carbonCalculator.js";
 
 export default function ItemCard({ item }) {
   const navigate = useNavigate();
-  const { favorites, toggleFavorite, userLocation } = useApp();
+  const { favorites, toggleFavorite, addToCart, cart, userLocation } = useApp();
   const isFav = favorites.includes(item.id);
+  const isInCart = cart.includes(item.id);
 
   const distance =
     userLocation && item.location?.lat != null && item.location?.lng != null
@@ -18,44 +20,23 @@ export default function ItemCard({ item }) {
         )
       : (item.distanceKm ?? 0.5);
 
-  // Compute CO2 saved for display using available fields with fallbacks.
-  const computeCo2Saved = (it) => {
-    // If backend provided explicit productionEmission and decayRate, use formula.
-    const p = typeof it.productionEmission === "number" ? it.productionEmission : null; // in kg
-    const d = typeof it.decayRate === "number" ? it.decayRate : null; // fraction 0..1
-
-    if (p !== null && d !== null) {
-      return Math.max(0, p * (1 - d));
+  const co2Display = (() => {
+    if (typeof item.co2Saved === "number") return item.co2Saved.toFixed(1);
+    if (typeof item.productionEmission === "number") {
+      const decay = typeof item.decayRate === "number" ? item.decayRate : 0.2;
+      return calculateCarbonSaved(null, item.productionEmission, decay).toFixed(1);
     }
+    const category = detectCategory(item.title);
+    return calculateCarbonSaved(category).toFixed(1);
+  })();
 
-    // If only productionEmission provided, assume a default decay rate (20%).
-    if (p !== null) {
-      return Math.max(0, p * (1 - 0.2));
-    }
-
-    // If legacy co2Kg exists and is negative (meaning saved), use its absolute value.
-    if (typeof it.co2Kg === "number") {
-      return Math.abs(it.co2Kg);
-    }
-
-    // Last-resort heuristic estimates based on tags and price.
-    const baseByTag = (() => {
-      if (it.tags?.includes("electronics")) return 80;
-      if (it.tags?.includes("living") || it.tags?.includes("plant")) return 15;
-      if (it.tags?.includes("clothing")) return 8;
-      if (it.tags?.includes("sports")) return 25;
-      return 20;
-    })();
-
-    // Scale by price a little (higher price -> likely larger item)
-    const priceFactor = Math.min(3, Math.max(0.5, (Number(it.price) || 20) / 50));
-    const estimatedProduction = baseByTag * priceFactor;
-    const assumedDecay = 0.2;
-    return Math.max(0, estimatedProduction * (1 - assumedDecay));
-  };
-
-  const co2SavedNum = computeCo2Saved(item);
-  const co2Display = (typeof co2SavedNum === "number" ? co2SavedNum : 2.3).toFixed(1);
+  const postedAgo = (() => {
+    const mins = item.postedMinutesAgo;
+    if (typeof mins !== "number") return null;
+    if (mins < 60) return `${mins}m ago`;
+    if (mins < 1440) return `${Math.floor(mins / 60)}h ago`;
+    return `${Math.floor(mins / 1440)}d ago`;
+  })();
 
   return (
     <article className="item-card" onClick={() => navigate(`/items/${item.id}`)}>
@@ -70,6 +51,17 @@ export default function ItemCard({ item }) {
         aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
       >
         {isFav ? "★" : "☆"}
+      </button>
+      <button
+        type="button"
+        className="item-card-cart"
+        onClick={(e) => {
+          e.stopPropagation();
+          addToCart(item.id);
+        }}
+        aria-label={isInCart ? "In cart" : "Add to cart"}
+      >
+        {isInCart ? "✓ In cart" : "+ Cart"}
       </button>
 
       {/* 图片区域 */}
@@ -87,6 +79,7 @@ export default function ItemCard({ item }) {
         <div className="item-card-info-left">
           <h3 className="item-card-title">{item.title}</h3>
           <div className="item-card-location">
+            {postedAgo ? `${postedAgo} · ` : ""}
             {distance.toFixed(1)}km | {item.location?.label || item.location?.city || "Dublin"}
           </div>
         </div>

@@ -5,6 +5,14 @@ import SearchBar from "../components/SearchBar.jsx";
 import CategoryTabs from "../components/CategoryTabs.jsx";
 import ItemCard from "../components/ItemCard.jsx";
 
+const SORT_OPTIONS = [
+  { id: "recommend", label: "Recommend" },
+  { id: "price-asc", label: "Price ↑" },
+  { id: "price-desc", label: "Price ↓" },
+  { id: "distance", label: "Distance" },
+  { id: "co2-saved", label: "CO₂ Saved" }
+];
+
 export default function HomePage() {
   const { items: allItems, loadingItems } = useApp();
   const [search, setSearch] = useState("");
@@ -12,6 +20,7 @@ export default function HomePage() {
   const [category, setCategory] = useState("recommend");
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [sort, setSort] = useState("recommend");
 
   // Debounce the search input to avoid spamming the AI search endpoint
   useEffect(() => {
@@ -43,20 +52,44 @@ export default function HomePage() {
   }, [debouncedSearch, allItems]);
 
   const finalFiltered = useMemo(() => {
-    return filteredItems.filter((item) => {
-      if (category === "living" && !item.tags?.includes("living")) return false;
-      if (category === "electronics" && !item.tags?.includes("electronics")) return false;
-      if (category === "sports" && !item.tags?.includes("sports")) return false;
-      return true;
-    });
-  }, [filteredItems, category]);
+    let result = filteredItems;
+    if (category !== "recommend") {
+      result = result.filter((item) => {
+        if (category === "living") return item.tags?.includes("living");
+        if (category === "electronics") return item.tags?.includes("electronics");
+        if (category === "sports") return item.tags?.includes("sports");
+        return true;
+      });
+    }
+    if (sort !== "recommend") {
+      result = [...result].sort((a, b) => {
+        if (sort === "price-asc") return (a.price || 0) - (b.price || 0);
+        if (sort === "price-desc") return (b.price || 0) - (a.price || 0);
+        if (sort === "distance") return (a.distanceKm || 0) - (b.distanceKm || 0);
+        if (sort === "co2-saved") return (b.co2Saved || 0) - (a.co2Saved || 0);
+        return 0;
+      });
+    }
+    return result;
+  }, [filteredItems, category, sort]);
 
   return (
     <div className="page home-page">
       <section className="home-hero">
         <SearchBar value={search} onChange={setSearch} />
         <CategoryTabs value={category} onChange={setCategory} />
-
+        <div className="sort-bar">
+          <select
+            className="sort-select"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            aria-label="Sort items"
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
       </section>
       <section className="home-grid-wrapper">
         {(loadingItems || searchLoading) && <div className="soft-pill">Loading items...</div>}

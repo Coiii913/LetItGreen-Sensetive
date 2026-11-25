@@ -6,11 +6,12 @@ import { useApp } from "../state/AppContext.jsx";
 export default function DetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { items, favorites, toggleFavorite, addToCart } = useApp();
+  const { items, favorites, cart, toggleFavorite, addToCart } = useApp();
   const [item, setItem] = useState(() =>
     items.find((i) => i.id === id) || null
   );
   const [loading, setLoading] = useState(!item);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (item) return;
@@ -23,6 +24,13 @@ export default function DetailPage() {
       })
       .catch((err) => {
         console.error("Failed to load item", err);
+        if (active) {
+          setError(
+            err.response?.status === 404
+              ? "Item not found"
+              : "Failed to load item"
+          );
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -32,10 +40,18 @@ export default function DetailPage() {
     };
   }, [id, item]);
 
-  if (loading || !item) {
+  if (loading) {
     return (
       <div className="page detail-page">
         <div className="soft-pill">Loading item...</div>
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div className="page detail-page">
+        <div className="soft-pill">{error || "Item not found."}</div>
       </div>
     );
   }
@@ -158,9 +174,10 @@ export default function DetailPage() {
             <button
               type="button"
               className="solid-btn secondary"
-              onClick={() => toggleFavorite(item.id)}
+              onClick={() => addToCart(item.id)}
+              disabled={cart.includes(item.id)}
             >
-              {isFav ? "✓ Added" : "Add to cart"}
+              {cart.includes(item.id) ? "✓ In cart" : "Add to cart"}
             </button>
           </div>
         </section>

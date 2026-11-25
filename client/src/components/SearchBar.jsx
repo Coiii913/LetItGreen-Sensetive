@@ -10,6 +10,16 @@ export default function SearchBar({ value, onChange }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+      {value && (
+        <button
+          type="button"
+          className="search-clear"
+          onClick={() => onChange("")}
+          aria-label="Clear search"
+        >
+          ✕
+        </button>
+      )}
     </div>
   );
 }

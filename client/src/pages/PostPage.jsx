@@ -65,7 +65,7 @@ export default function PostPage() {
       }
     } catch (err) {
       console.error("Vision analyze failed", err);
-      alert("Vision API request failed. Check console for details.");
+      setDescription(description || ""); // Keep existing description, don't block
     } finally {
       setVisionLoading(false);
     }
@@ -86,6 +86,7 @@ export default function PostPage() {
       }
     } catch (err) {
       console.error("AI enhance failed", err);
+      // Graceful degradation - do not block user flow
     } finally {
       setAiLoading(false);
     }

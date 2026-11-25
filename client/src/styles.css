@@ -230,6 +230,20 @@ body {
   opacity: 0.7;
 }
 
+.search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #34493A;
+  opacity: 0.6;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+.search-clear:hover {
+  opacity: 1;
+}
+
 
 
 .category-tabs {
@@ -1551,4 +1565,21 @@ body {
   width: 100%;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+/* Sort bar */
+.sort-bar {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #eee;
+}
+
+.sort-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  cursor: pointer;
 }
